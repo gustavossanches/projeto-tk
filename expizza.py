@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 
 janela = tk.Tk()
 
@@ -8,44 +9,35 @@ janela.geometry('300x350')
 tamanhos = {'Pequena': 15, 'Média': 22, 'Grande': 28}
 ingredientes = {"Queijo Extra": 2.00, "Pepperoni": 3.00, "Bacon": 4.00}
 ingredientes_lista = ["Queijo Extra", 'Pepperoni', 'Bacon']
-valor_total = 0
 tamanho_selecionado = ''
 ingrediente_selecionado = []
 
 
-variavel = tk.StringVar()#? para que serve e porque usar
+variavel = tk.StringVar()
 variavel.set('Grande')
 
+#muda o nome conforme o tamanho da pizza for escolhido
 def escolha(var):
     global tamanho_selecionado
     label_escolha['text'] = var
     tamanho_selecionado = var
 
+#calcula os valores das pizzas e ingredientes
 def calcular():
-
+    global qtd, valor_total
     tamanho = variavel.get()
     qtd = int(input.get())
     
-    # if tamanho == 'Pequena':
-    #     preco_un = 15
-    # elif tamanho == 'Média':
-    #     preco_un = 22
-    # else:
-    #     preco_un = 28
-    
+    #pega os ingredientes marcados
     ingredientes_marcados = []
-    print(15*'=')
     for nome, estado in enumerate(lista_checks):
-        print('-')
         estado_selecionado = estado.get()
-        print(f'Estado selecionado: {estado_selecionado}')
-        print(ingredientes_lista[nome])
-        
-        if estado_selecionado == 1:
+        if estado_selecionado == 1:#se for 1 esta marcado
             ingredientes_marcados.append(ingredientes_lista[nome])
         
     preco_un = tamanhos[tamanho]
     
+    #pega todos os valores dos ingredientes marcados
     total_ingredientes = 0
     for i in ingredientes_marcados:
         total_ingredientes += ingredientes[i]
@@ -56,6 +48,22 @@ def calcular():
     
     label_resultado.config(text=f'Tamanho: {tamanho} - R${total_unidade:.2f} \n Ingredientes: \n {ingredientes_marcados} - R${total_ingredientes:.2f} \n Valor total: R${valor_total:.2f} ')
 
+def desmarcar(a, b):
+    a.delete(0, 'end')
+    b.config(text='--')
+    for asd in (lista_checks):
+        if asd.get() == 1:
+            asd.set(0)
+def confirmar():
+    calcular()
+    
+    #chama o messagebox
+    resposta = messagebox.askquestion(message=f"Pedido com valor final de R${valor_total:.2f}.\n Deseja confirmar o pedido?")
+    if resposta == 'yes':
+        desmarcar(input, label_resultado)
+        
+    else:
+        print('deu ruim')
 
 teste = tk.Frame(janela, border='5', background='blue')
 teste.grid(row=0, column=0, padx=5, pady=5)
@@ -66,8 +74,8 @@ teste2.grid(padx=5, pady=5)
 teste3 = tk.Frame(janela, bg='lightblue')
 teste3.grid()
 
-
-lista_checks = [] #?  salva os estados 
+#cria checkbuttons
+lista_checks = []
 for ingrediente in ingredientes.items():
     variavel_check = tk.IntVar()
     inupt_check = tk.Checkbutton(teste3, text=ingrediente[0], variable=variavel_check)
@@ -88,7 +96,7 @@ input = tk.Entry(teste2, width=10)
 
 label_resultado = tk.Label(teste2, text='--', bg='lightgreen')
 
-btn = tk.Button(janela, text='enviar', command=calcular, width=20)
+btn = tk.Button(janela, text='enviar', command=confirmar, width=20)
 
 label_escolha.grid(pady=20)
 label_inicio.grid(pady=0,)

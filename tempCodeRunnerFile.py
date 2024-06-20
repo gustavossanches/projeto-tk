@@ -1,1 +1,1 @@
-.get()
+valor_total
